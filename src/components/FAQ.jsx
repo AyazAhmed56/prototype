@@ -3,6 +3,25 @@ import React, { useState } from "react";
 
 export default function FAQ() {
   const [search, setSearch] = useState("");
+  const [openIndex, setOpenIndex] = useState(null);
+
+  const toggleAnswer = (index) => {
+    setOpenIndex(openIndex === index ? null : index);
+  };
+
+  const highlightText = (text, query) => {
+    if (!query) return text;
+    const regex = new RegExp(`(${query})`, "gi");
+    return text.split(regex).map((part, i) =>
+      regex.test(part) ? (
+        <span key={i} className="bg-yellow-200 font-semibold">
+          {part}
+        </span>
+      ) : (
+        part
+      )
+    );
+  };
 
   const filtered = faqData.filter((f) =>
     f.question.toLowerCase().includes(search.toLowerCase())
@@ -10,32 +29,42 @@ export default function FAQ() {
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 mt-6 animate-fadeIn">
-      <h2 className="text-2xl font-bold mb-6 text-teal-700 text-center">
-        Frequently Asked Questions
+      <h2 className="text-2xl font-bold mb-6 text-blue-700 text-center">
+        💧 Frequently Asked Questions
       </h2>
 
+      {/* Search Input */}
       <input
         type="text"
-        placeholder="Search question..."
-        className="border border-gray-300 p-3 w-full rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+        placeholder="🔍 Search question..."
+        className="border border-gray-300 p-3 w-full rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-blue-400 focus:border-transparent transition"
         value={search}
         onChange={(e) => setSearch(e.target.value)}
       />
 
+      {/* FAQ List */}
       <div className="space-y-4">
         {filtered.map((f, i) => (
           <div
             key={i}
-            className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-shadow hover:scale-[1.02]"
+            className="p-4 border border-blue-100 rounded-xl hover:shadow-md transition-shadow hover:scale-[1.01] cursor-pointer bg-gradient-to-r from-blue-50 to-cyan-50"
+            onClick={() => toggleAnswer(i)}
           >
-            <h3 className="font-semibold text-teal-700 mb-2">{f.question}</h3>
-            <p className="text-gray-700">{f.answer}</p>
+            <h3 className="font-semibold text-blue-800 flex justify-between items-center">
+              {highlightText(f.question, search)}
+              <span className="text-xl">{openIndex === i ? "−" : "+"}</span>
+            </h3>
+            {openIndex === i && (
+              <p className="text-gray-700 mt-2 transition-all duration-300">
+                {f.answer}
+              </p>
+            )}
           </div>
         ))}
 
         {filtered.length === 0 && (
           <p className="text-center text-gray-500 py-4">
-            No questions found. Try a different keyword.
+            ❌ No questions found. Try a different keyword.
           </p>
         )}
       </div>
@@ -43,7 +72,7 @@ export default function FAQ() {
   );
 }
 
-// Add your faqData above or import from a separate file
+// FAQ Data
 const faqData = [
   {
     question: "What is groundwater?",

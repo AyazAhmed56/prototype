@@ -1,20 +1,21 @@
 // Navbar.jsx
 import { Link, useLocation } from "react-router-dom";
 import { useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
 
 export default function Navbar() {
-  const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const [isDrawerOpen, setIsDrawerOpen] = useState(false);
   const location = useLocation();
 
   const navItems = [
     { path: "/", label: "Home" },
     { path: "/chat", label: "ChatBOT" },
     { path: "/region", label: "Region Selector" },
+    { path: "/language", label: "Language" },
     { path: "/alerts", label: "Alerts" },
     { path: "/community", label: "Community" },
     { path: "/analysis", label: "Analysis" },
     { path: "/map", label: "India Map" },
-    { path: "/indicators", label: "Indicators" },
     { path: "/faq", label: "FAQ" },
     { path: "/budget", label: "Water Budget" },
     { path: "/knowledge", label: "Knowledge+Action" },
@@ -26,6 +27,7 @@ export default function Navbar() {
     <nav className="bg-teal-800 text-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-3">
+          {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
               <svg
@@ -46,65 +48,92 @@ export default function Navbar() {
             <h2 className="text-xl font-bold">INGRES Assistant</h2>
           </Link>
 
-          {/* Desktop Menu */}
-          <div className="hidden md:flex space-x-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`px-3 py-2 rounded-md transition-all duration-300 ${
-                  location.pathname === item.path
-                    ? "bg-teal-600 text-white shadow-inner"
-                    : "hover:bg-teal-700 hover:text-white"
-                }`}
-              >
-                {item.label}
-              </Link>
-            ))}
-          </div>
+          {/* Right Side - Login + Drawer Button */}
+          <div className="flex items-center space-x-4">
+            <button className="bg-white text-teal-700 px-4 py-1.5 rounded-lg font-semibold hover:bg-gray-100 transition">
+              Login
+            </button>
 
-          {/* Mobile menu button */}
-          <button
-            className="md:hidden focus:outline-none"
-            onClick={() => setIsMenuOpen(!isMenuOpen)}
-          >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-6 w-6"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
+            {/* Drawer Button */}
+            <button
+              className="focus:outline-none"
+              onClick={() => setIsDrawerOpen(true)}
             >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M4 6h16M4 12h16m-7 6h7"
-              />
-            </svg>
-          </button>
-        </div>
-
-        {/* Mobile Menu */}
-        {isMenuOpen && (
-          <div className="md:hidden py-2 bg-teal-700 rounded-b-lg animate-fadeIn">
-            {navItems.map((item) => (
-              <Link
-                key={item.path}
-                to={item.path}
-                className={`block px-4 py-2 ${
-                  location.pathname === item.path
-                    ? "bg-teal-600"
-                    : "hover:bg-teal-600"
-                }`}
-                onClick={() => setIsMenuOpen(false)}
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-7 w-7"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                {item.label}
-              </Link>
-            ))}
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M4 6h16M4 12h16m-7 6h7"
+                />
+              </svg>
+            </button>
           </div>
-        )}
+        </div>
       </div>
+
+      {/* Sidebar Drawer */}
+      <AnimatePresence>
+        {isDrawerOpen && (
+          <motion.div
+            className="fixed top-0 left-0 h-full w-64 bg-white shadow-2xl z-50 flex flex-col"
+            initial={{ x: "-100%" }}
+            animate={{ x: 0 }}
+            exit={{ x: "-100%" }}
+            transition={{ type: "spring", stiffness: 120, damping: 20 }}
+          >
+            {/* Drawer Header */}
+            <div className="flex justify-between items-center p-4 bg-teal-700 text-white">
+              <h2 className="font-bold text-lg">🌊 INGRES Menu</h2>
+              <button onClick={() => setIsDrawerOpen(false)}>
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="h-6 w-6"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M6 18L18 6M6 6l12 12"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Drawer Links */}
+            <div className="flex-1 overflow-y-auto p-4 space-y-2">
+              {navItems.map((item) => (
+                <Link
+                  key={item.path}
+                  to={item.path}
+                  className={`block px-3 py-2 rounded-lg text-gray-800 font-medium transition-all ${
+                    location.pathname === item.path
+                      ? "bg-teal-100 text-teal-700"
+                      : "hover:bg-gray-100"
+                  }`}
+                  onClick={() => setIsDrawerOpen(false)}
+                >
+                  {item.label}
+                </Link>
+              ))}
+            </div>
+
+            {/* Drawer Footer */}
+            <div className="p-4 border-t bg-gray-50 text-center text-sm text-gray-600">
+              © 2025 INGRES Assistant
+            </div>
+          </motion.div>
+        )}
+      </AnimatePresence>
     </nav>
   );
 }

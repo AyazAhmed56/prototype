@@ -1,41 +1,70 @@
-import {
-  MapContainer,
-  TileLayer,
-  GeoJSON,
-  Tooltip,
-  Popup,
-} from "react-leaflet";
+// MapView.jsx
+import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 
-// Dummy groundwater status data (replace with real DB/INGRES data)
-const groundwaterStatus = {
-  Maharashtra: "Critical",
-  Gujarat: "Safe",
-  Rajasthan: "Over-exploited",
-  Karnataka: "Semi-critical",
-  UttarPradesh: "Critical",
+// Example groundwater data per state
+const groundwaterData = {
+  Maharashtra: {
+    status: "Critical",
+    waterLevel: "12.5m",
+    recharge: "60mm",
+    extraction: "120%",
+    rainfall: "900mm",
+    trend: "declining",
+    quality: "poor",
+    salinity: "1500 mg/L",
+  },
+  Gujarat: {
+    status: "Safe",
+    waterLevel: "20m",
+    recharge: "80mm",
+    extraction: "60%",
+    rainfall: "1100mm",
+    trend: "stable",
+    quality: "good",
+    salinity: "900 mg/L",
+  },
+  Rajasthan: {
+    status: "Over-exploited",
+    waterLevel: "15.2m",
+    recharge: "50mm",
+    extraction: "140%",
+    rainfall: "400mm",
+    trend: "rapid decline",
+    quality: "poor",
+    salinity: "1800 mg/L",
+  },
+  Karnataka: {
+    status: "Semi-critical",
+    waterLevel: "18.3m",
+    recharge: "75mm",
+    extraction: "90%",
+    rainfall: "950mm",
+    trend: "slightly declining",
+    quality: "moderate",
+    salinity: "1200 mg/L",
+  },
 };
 
-// 🌊 Groundwater-themed color palette
 const getColor = (status) => {
   switch (status) {
     case "Over-exploited":
-      return "#B71C1C"; // deep red
+      return "#8e44ad"; // purple
     case "Critical":
-      return "#FF6F00"; // dark orange
+      return "#e74c3c"; // red
     case "Semi-critical":
-      return "#FFD600"; // warm yellow
+      return "#f39c12"; // orange
     case "Safe":
-      return "#2E7D32"; // deep green
+      return "#27ae60"; // green
     default:
-      return "#90A4AE"; // gray for unknown
+      return "#95a5a6"; // gray
   }
 };
 
 export default function MapView() {
   const [indiaGeoJson, setIndiaGeoJson] = useState(null);
-  const [activeLayer, setActiveLayer] = useState("Groundwater");
+  const [selectedState, setSelectedState] = useState(null);
 
   useEffect(() => {
     fetch(
@@ -45,72 +74,96 @@ export default function MapView() {
       .then((data) => setIndiaGeoJson(data));
   }, []);
 
-  const styleFeature = (feature) => {
-    const stateName = feature.properties.NAME_1;
-    const status = groundwaterStatus[stateName] || "Unknown";
-    return {
-      fillColor: getColor(status),
-      weight: 1,
-      opacity: 1,
-      color: "#1565C0", // water blue borders
-      fillOpacity: 0.65,
-    };
-  };
+  const styleFeature = () => ({
+    fillColor: "#ffffff",
+    weight: 1,
+    color: "#1565C0",
+    fillOpacity: 0.4,
+  });
 
   const onEachFeature = (feature, layer) => {
     const stateName = feature.properties.NAME_1;
-    const status = groundwaterStatus[stateName] || "Unknown";
-
-    layer.bindTooltip(`${stateName}`, {
-      direction: "center",
-      className: "bg-blue-50 text-blue-900 p-1 rounded-md shadow-md",
-    });
-
-    layer.bindPopup(`<b>${stateName}</b><br/>Status: <b>${status}</b>`);
 
     layer.on({
-      click: (e) => {
-        e.target.setStyle({
-          weight: 3,
-          color: "#0D47A1",
-          fillOpacity: 0.8,
-        });
+      click: () => {
+        if (groundwaterData[stateName]) {
+          setSelectedState({ name: stateName, ...groundwaterData[stateName] });
+        } else {
+          setSelectedState({ name: stateName, status: "Unknown" });
+        }
       },
       mouseover: (e) => {
-        e.target.setStyle({
-          weight: 2,
-          color: "#0288D1",
-        });
+        e.target.setStyle({ weight: 2, color: "#0288D1" });
       },
       mouseout: (e) => {
-        e.target.setStyle(styleFeature(feature));
+        e.target.setStyle(styleFeature());
       },
     });
   };
 
   return (
-    <div className="relative">
-      {/* 🌊 Layer Toggle Buttons */}
-      <div className="absolute top-4 left-4 z-[1000] bg-white shadow-lg p-3 rounded-xl">
-        <p className="font-semibold text-blue-900">Layers</p>
-        {["Groundwater", "Rainfall", "Salinity", "Extraction"].map((layer) => (
-          <button
-            key={layer}
-            onClick={() => setActiveLayer(layer)}
-            className={`block w-full text-left px-3 py-1 rounded-md my-1 ${
-              activeLayer === layer
-                ? "bg-blue-600 text-white"
-                : "bg-blue-50 text-blue-700 hover:bg-blue-100"
-            }`}
+    <div className="relative h-screen">
+      {/* Indicator Panel */}
+      {selectedState && (
+        <div className="absolute bottom-4 left-4 z-[1000] bg-white shadow-lg p-4 rounded-xl w-96">
+          <div className="flex justify-between items-start">
+            <h3 className="font-bold text-lg">{selectedState.name}</h3>
+            <button
+              onClick={() => setSelectedState(null)}
+              className="text-gray-400 hover:text-gray-700"
+            >
+              ✖
+            </button>
+          </div>
+          <span
+            className="inline-block mt-2 px-2 py-1 rounded text-white font-semibold"
+            style={{ backgroundColor: getColor(selectedState.status) }}
           >
-            {layer}
-          </button>
-        ))}
-      </div>
+            {selectedState.status}
+          </span>
 
-      {/* 🌍 Map */}
+          {selectedState.waterLevel && (
+            <div className="mt-4 grid grid-cols-2 gap-2 text-center text-sm">
+              <div className="p-2 bg-gray-50 rounded shadow">
+                <div className="font-bold text-blue-700">
+                  {selectedState.waterLevel}
+                </div>
+                <div>Water Level</div>
+              </div>
+              <div className="p-2 bg-gray-50 rounded shadow">
+                <div className="font-bold text-green-700">
+                  {selectedState.recharge}
+                </div>
+                <div>Recharge</div>
+              </div>
+              <div className="p-2 bg-gray-50 rounded shadow">
+                <div className="font-bold text-red-700">
+                  {selectedState.extraction}
+                </div>
+                <div>Extraction</div>
+              </div>
+              <div className="p-2 bg-gray-50 rounded shadow">
+                <div className="font-bold text-purple-700">
+                  {selectedState.rainfall}
+                </div>
+                <div>Rainfall</div>
+              </div>
+            </div>
+          )}
+
+          {selectedState.trend && (
+            <p className="mt-3 text-xs text-gray-600">
+              <strong>Trend:</strong> {selectedState.trend} •{" "}
+              <strong>Quality:</strong> {selectedState.quality} •{" "}
+              <strong>Salinity:</strong> {selectedState.salinity}
+            </p>
+          )}
+        </div>
+      )}
+
+      {/* Map */}
       <MapContainer
-        style={{ height: "100vh", width: "100%" }}
+        style={{ height: "100%", width: "100%" }}
         center={[22.9734, 78.6569]}
         zoom={5}
       >

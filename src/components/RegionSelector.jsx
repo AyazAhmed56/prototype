@@ -7,55 +7,85 @@ export default function RegionSelector() {
     district: "",
     block: "",
   });
-
   const [loadingLocation, setLoadingLocation] = useState(false);
+  const [error, setError] = useState("");
 
-  // Sample data - Ideally fetched from an API
-  const states = [
-    "Maharashtra",
-    "Karnataka",
-    "Tamil Nadu",
-    "Uttar Pradesh",
-    "Gujarat",
-  ];
-  const districts = {
-    Maharashtra: ["Pune", "Mumbai", "Nagpur", "Nashik", "Aurangabad", "Thane"],
-    Karnataka: ["Bengaluru", "Mysuru", "Hubli", "Mangaluru", "Belagavi"],
-    "Tamil Nadu": [
-      "Chennai",
-      "Coimbatore",
-      "Madurai",
-      "Tiruchirappalli",
-      "Salem",
-    ],
-    "Uttar Pradesh": ["Lucknow", "Kanpur", "Varanasi", "Agra", "Prayagraj"],
-    Gujarat: ["Ahmedabad", "Surat", "Vadodara", "Rajkot", "Gandhinagar"],
-  };
-  const blocks = {
-    Pune: ["Haveli", "Mulshi", "Baramati", "Indapur", "Bhor"],
-    Mumbai: ["Mumbai City", "Mumbai Suburban"],
-    Nagpur: ["Nagpur Urban", "Nagpur Rural", "Katol", "Kalmeshwar"],
-    Nashik: ["Nashik East", "Nashik West", "Malegaon", "Sinnar"],
-    Aurangabad: ["Aurangabad East", "Aurangabad West", "Gangapur", "Kannad"],
+  // Centralized region data
+  const regionData = {
+    Maharashtra: {
+      districts: {
+        Pune: ["Haveli", "Mulshi", "Baramati", "Indapur", "Bhor"],
+        Mumbai: ["Mumbai City", "Mumbai Suburban"],
+        Nagpur: ["Nagpur Urban", "Nagpur Rural", "Katol", "Kalmeshwar"],
+        Nashik: ["Nashik East", "Nashik West", "Malegaon", "Sinnar"],
+        Aurangabad: ["Aurangabad East", "Aurangabad West", "Gangapur", "Kannad"],
+        Thane: ["Thane Urban", "Thane Rural"],
+      },
+    },
+    Karnataka: {
+      districts: {
+        Bengaluru: ["North", "South", "East", "West"],
+        Mysuru: ["Mysuru Urban", "Mysuru Rural"],
+        Hubli: ["Hubli Urban", "Hubli Rural"],
+        Mangaluru: ["Dakshina Kannada", "Udupi"],
+        Belagavi: ["Belagavi North", "Belagavi South"],
+      },
+    },
+    "Tamil Nadu": {
+      districts: {
+        Chennai: ["North", "South", "Central"],
+        Coimbatore: ["Gandhipuram", "Peelamedu", "Sulur"],
+        Madurai: ["Madurai East", "Madurai West"],
+        Tiruchirappalli: ["Srirangam", "Lalgudi"],
+        Salem: ["Salem North", "Salem South"],
+      },
+    },
+    "Uttar Pradesh": {
+      districts: {
+        Lucknow: ["Central", "North", "South"],
+        Kanpur: ["Kanpur Urban", "Kanpur Rural"],
+        Varanasi: ["Varanasi North", "Varanasi South"],
+        Agra: ["Agra City", "Agra Rural"],
+        Prayagraj: ["Prayagraj Urban", "Prayagraj Rural"],
+      },
+    },
+    Gujarat: {
+      districts: {
+        Ahmedabad: ["East", "West", "Rural"],
+        Surat: ["Surat City", "Surat Rural"],
+        Vadodara: ["Vadodara East", "Vadodara West"],
+        Rajkot: ["Rajkot City", "Rajkot Rural"],
+        Gandhinagar: ["Gandhinagar Urban", "Gandhinagar Rural"],
+      },
+    },
   };
 
   const handleAutoDetect = () => {
     setLoadingLocation(true);
+    setError("");
     navigator.geolocation.getCurrentPosition(
-      (pos) => {
-        // Placeholder: In real app, convert lat/lon to state/district/block
+      () => {
+        // Example hardcoded result (replace with real reverse geocoding API)
         setRegion({ state: "Maharashtra", district: "Pune", block: "Haveli" });
         setLoadingLocation(false);
       },
-      () => setLoadingLocation(false)
+      () => {
+        setError("❌ Failed to detect location. Please select manually.");
+        setLoadingLocation(false);
+      }
     );
   };
+
+  // Extract options
+  const states = Object.keys(regionData);
+  const districts = regionData[region.state]?.districts || {};
+  const blocks = districts[region.district] || [];
 
   return (
     <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mt-8 animate-fadeIn">
       {/* Header */}
       <div className="bg-gradient-to-r from-emerald-700 via-green-600 to-cyan-600 p-6 text-white">
-        <h2 className="text-2xl font-bold flex items-center">
+        <h2 className="text-2xl font-bold flex items-center gap-2">
           📍 Region / Location Selector
         </h2>
         <p className="mt-2 text-sm opacity-90">
@@ -91,10 +121,10 @@ export default function RegionSelector() {
               setRegion({ ...region, district: e.target.value, block: "" })
             }
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-            disabled={!districts[region.state]}
+            disabled={states.length === 0}
           >
             <option value="">Select District</option>
-            {districts[region.state]?.map((district) => (
+            {Object.keys(districts).map((district) => (
               <option key={district}>{district}</option>
             ))}
           </select>
@@ -109,10 +139,10 @@ export default function RegionSelector() {
             value={region.block}
             onChange={(e) => setRegion({ ...region, block: e.target.value })}
             className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 transition-all"
-            disabled={!region.district || !blocks[region.district]}
+            disabled={!region.district}
           >
             <option value="">Select Block/Taluk</option>
-            {blocks[region.district]?.map((block) => (
+            {blocks.map((block) => (
               <option key={block}>{block}</option>
             ))}
           </select>
@@ -125,6 +155,11 @@ export default function RegionSelector() {
         >
           {loadingLocation ? "Detecting..." : "📡 Auto-Detect My Location"}
         </button>
+
+        {/* Error Message */}
+        {error && (
+          <div className="text-red-600 bg-red-100 p-3 rounded-lg">{error}</div>
+        )}
 
         {/* Selected Region Summary */}
         {region.state && region.district && region.block && (

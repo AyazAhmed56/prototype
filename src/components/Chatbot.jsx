@@ -1,48 +1,132 @@
-// Chatbot.jsx
-import { useState } from "react";
-import faqData from "../data/faqData";
-import SpeechRecognition, {
-  useSpeechRecognition,
-} from "react-speech-recognition";
+import { useState, useEffect } from "react";
 
-// Improved Chart components
+// FAQ data - embedded directly
+const faqData = [
+  {
+    question: "groundwater levels in maharashtra",
+    answer:
+      "Here's the current groundwater status in Maharashtra. The state has 50% safe areas, 30% semi-critical, and 20% critical zones. Conservation efforts are needed in the critical regions.",
+    chartType: "bar",
+    chartTitle: "Groundwater Status in Maharashtra",
+    chartData: [
+      { label: "Safe", value: 50, color: "#10B981" },
+      { label: "Semi-Critical", value: 30, color: "#F59E0B" },
+      { label: "Critical", value: 20, color: "#EF4444" },
+    ],
+  },
+  {
+    question: "karnataka status",
+    answer:
+      "Karnataka's groundwater distribution shows 40% safe areas, 40% semi-critical, and 20% critical regions. The state needs to focus on recharge initiatives.",
+    chartType: "pie",
+    chartTitle: "Groundwater Distribution in Karnataka",
+    chartData: [
+      { label: "Safe", value: 40, color: "#10B981" },
+      { label: "Semi-Critical", value: 40, color: "#F59E0B" },
+      { label: "Critical", value: 20, color: "#EF4444" },
+    ],
+  },
+  {
+    question: "compare state groundwater",
+    answer:
+      "Here's a comparison of groundwater levels across major states. Maharashtra has higher safe areas while Karnataka has more semi-critical zones.",
+    chartType: "bar",
+    chartTitle: "State-wise Groundwater Comparison (Safe Areas)",
+    chartData: [
+      { label: "Maharashtra", value: 50, color: "#3B82F6" },
+      { label: "Karnataka", value: 40, color: "#8B5CF6" },
+      { label: "Tamil Nadu", value: 60, color: "#EC4899" },
+      { label: "Uttar Pradesh", value: 35, color: "#F59E0B" },
+    ],
+  },
+  {
+    question: "trends in maharashtra",
+    answer:
+      "Groundwater trends in Maharashtra over the past 5 years show improvement in safe zones due to conservation efforts. The percentage of safe areas has increased from 35% to 50%.",
+    chartType: "line",
+    chartTitle: "5-Year Groundwater Trend in Maharashtra (Safe Areas)",
+    chartData: [
+      { label: "2019", value: 35 },
+      { label: "2020", value: 38 },
+      { label: "2021", value: 42 },
+      { label: "2022", value: 46 },
+      { label: "2023", value: 50 },
+    ],
+  },
+  {
+    question: "show me conservation methods",
+    answer:
+      "These are the effectiveness rates of different groundwater conservation methods. Artificial recharge shows the highest effectiveness at 85%.",
+    chartType: "bar",
+    chartTitle: "Effectiveness of Conservation Methods",
+    chartData: [
+      { label: "Rainwater Harvesting", value: 80, color: "#3B82F6" },
+      { label: "Drip Irrigation", value: 75, color: "#10B981" },
+      { label: "Watershed Management", value: 70, color: "#F59E0B" },
+      { label: "Artificial Recharge", value: 85, color: "#8B5CF6" },
+    ],
+  },
+  {
+    question: "what is groundwater",
+    answer:
+      "Groundwater is the water found beneath the Earth's surface in soil pore spaces and in the fractures of rock formations. It's a crucial water resource that supplies drinking water to billions of people worldwide.",
+  },
+  {
+    question: "why is groundwater important",
+    answer:
+      "Groundwater is vital because it provides drinking water for over 2 billion people globally, supports agricultural irrigation, maintains river flows during dry seasons, and serves as a buffer against climate variability.",
+  },
+  {
+    question: "what is water recharge",
+    answer:
+      "Water recharge is the natural or artificial process where surface water infiltrates into the ground and replenishes underground aquifers. This can happen through rainfall, rivers, or human-made recharge structures.",
+  },
+  {
+    question: "what does critical status mean",
+    answer:
+      "Critical status means groundwater extraction exceeds 90% of the annual recharge, indicating severe depletion. Immediate conservation measures and usage restrictions are necessary to prevent aquifer collapse.",
+  },
+];
 const BarChart = ({ data, title }) => {
   const maxValue = Math.max(...data.map((item) => item.value));
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md mt-4 border border-gray-200">
-      <h3 className="font-semibold text-lg mb-4 text-center text-gray-800">
+    <div className="bg-white p-4 rounded-lg shadow-lg mt-4 border border-blue-100">
+      <h3 className="font-semibold text-lg mb-4 text-center text-blue-900">
         {title}
       </h3>
-      <div className="flex items-end justify-between h-48 px-4 pb-4 border-b border-gray-300">
+      <div className="flex items-end justify-between h-48 px-4 pb-4 border-b border-blue-200">
         {data.map((item, index) => (
           <div key={index} className="flex flex-col items-center w-16">
-            <div className="text-xs text-gray-600 mb-1">{item.value}%</div>
+            <div className="text-xs text-blue-600 mb-1 font-medium">
+              {item.value}%
+            </div>
             <div
-              className="w-12 rounded-t transition-all duration-500 flex items-end justify-center"
+              className="w-12 rounded-t transition-all duration-700 flex items-end justify-center hover:opacity-80"
               style={{
                 height: `${(item.value / maxValue) * 100}%`,
                 backgroundColor: item.color,
+                boxShadow: "0 2px 4px rgba(59, 130, 246, 0.1)",
               }}
             >
               <div className="text-white text-xs font-bold mb-1">
                 {item.value}%
               </div>
             </div>
-            <div className="text-xs mt-2 text-center font-medium text-gray-700">
+            <div className="text-xs mt-2 text-center font-medium text-blue-800">
               {item.label}
             </div>
           </div>
         ))}
       </div>
-      <div className="flex justify-center mt-3">
+      <div className="flex justify-center mt-3 flex-wrap">
         {data.map((item, index) => (
-          <div key={index} className="flex items-center mx-2">
+          <div key={index} className="flex items-center mx-2 mb-1">
             <div
               className="w-3 h-3 rounded-full mr-1"
               style={{ backgroundColor: item.color }}
             ></div>
-            <span className="text-xs text-gray-600">{item.label}</span>
+            <span className="text-xs text-blue-700">{item.label}</span>
           </div>
         ))}
       </div>
@@ -55,8 +139,8 @@ const PieChart = ({ data, title }) => {
   let cumulativePercent = 0;
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md mt-4 border border-gray-200">
-      <h3 className="font-semibold text-lg mb-4 text-center text-gray-800">
+    <div className="bg-white p-4 rounded-lg shadow-lg mt-4 border border-blue-100">
+      <h3 className="font-semibold text-lg mb-4 text-center text-blue-900">
         {title}
       </h3>
       <div className="flex flex-col md:flex-row items-center justify-center">
@@ -79,12 +163,13 @@ const PieChart = ({ data, title }) => {
                   strokeDasharray={`${percent} ${100 - percent}`}
                   strokeDashoffset={-startPercent + 25}
                   transform="rotate(-90 50 50)"
+                  className="transition-all duration-500 hover:opacity-80"
                 />
               );
             })}
           </svg>
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-lg font-bold text-gray-700">100%</span>
+            <span className="text-lg font-bold text-blue-800">100%</span>
           </div>
         </div>
 
@@ -95,10 +180,10 @@ const PieChart = ({ data, title }) => {
                 className="w-4 h-4 rounded-full mr-2"
                 style={{ backgroundColor: item.color }}
               ></div>
-              <span className="text-sm font-medium text-gray-700">
+              <span className="text-sm font-medium text-blue-800">
                 {item.label}:
               </span>
-              <span className="text-sm font-bold ml-1 text-gray-800">
+              <span className="text-sm font-bold ml-1 text-blue-900">
                 {item.value}%
               </span>
             </div>
@@ -116,28 +201,40 @@ const LineChart = ({ data, title }) => {
   const range = maxValue - minValue;
 
   return (
-    <div className="bg-white p-4 rounded-lg shadow-md mt-4 border border-gray-200">
-      <h3 className="font-semibold text-lg mb-4 text-center text-gray-800">
+    <div className="bg-white p-4 rounded-lg shadow-lg mt-4 border border-blue-100">
+      <h3 className="font-semibold text-lg mb-4 text-center text-blue-900">
         {title}
       </h3>
       <div className="h-48 relative">
         {/* Y-axis labels */}
-        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-gray-600 w-8">
+        <div className="absolute left-0 top-0 h-full flex flex-col justify-between text-xs text-blue-600 w-8">
           <span>{maxValue}%</span>
           <span>{Math.round((maxValue + minValue) / 2)}%</span>
           <span>{minValue}%</span>
         </div>
 
         {/* Chart area */}
-        <div className="ml-8 h-full border-b border-gray-300 border-l relative">
+        <div className="ml-8 h-full border-b border-l border-blue-200 relative">
           <svg
             className="w-full h-full"
             viewBox="0 0 100 100"
             preserveAspectRatio="none"
           >
+            <defs>
+              <linearGradient
+                id="lineGradient"
+                x1="0%"
+                y1="0%"
+                x2="100%"
+                y2="0%"
+              >
+                <stop offset="0%" stopColor="#3B82F6" />
+                <stop offset="100%" stopColor="#1E40AF" />
+              </linearGradient>
+            </defs>
             <polyline
               fill="none"
-              stroke="#0da487"
+              stroke="url(#lineGradient)"
               strokeWidth="3"
               points={data
                 .map(
@@ -154,15 +251,16 @@ const LineChart = ({ data, title }) => {
                 cx={(i / (data.length - 1)) * 90 + 5}
                 cy={90 - ((item.value - minValue) / range) * 80 + 5}
                 r="4"
-                fill="#0da487"
+                fill="#1E40AF"
                 stroke="white"
                 strokeWidth="2"
+                className="hover:r-6 transition-all"
               />
             ))}
           </svg>
 
           {/* X-axis labels */}
-          <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-gray-600 -mb-6 px-2">
+          <div className="absolute bottom-0 left-0 right-0 flex justify-between text-xs text-blue-600 -mb-6 px-2">
             {data.map((item, i) => (
               <div key={i} className="text-center">
                 {item.label}
@@ -175,18 +273,133 @@ const LineChart = ({ data, title }) => {
   );
 };
 
+// Language selector component
+const LanguageSelector = ({ currentLanguage, onLanguageChange }) => {
+  const languages = [
+    { code: "en", name: "English" },
+    { code: "hi", name: "हिन्दी" },
+    { code: "mr", name: "मराठी" },
+    { code: "kn", name: "ಕನ್ನಡ" },
+    { code: "ta", name: "தமிழ்" },
+    { code: "te", name: "తెలుగు" },
+  ];
+
+  return (
+    <div className="flex items-center space-x-2 mb-2">
+      <span className="text-xs text-blue-700 font-medium">Language:</span>
+      <select
+        value={currentLanguage}
+        onChange={(e) => onLanguageChange(e.target.value)}
+        className="text-xs border border-blue-300 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-blue-500"
+      >
+        {languages.map((lang) => (
+          <option key={lang.code} value={lang.code}>
+            {lang.name}
+          </option>
+        ))}
+      </select>
+    </div>
+  );
+};
+
 export default function Chatbot() {
   const [messages, setMessages] = useState([]);
   const [input, setInput] = useState("");
   const [isMinimized, setIsMinimized] = useState(false);
+  const [currentLanguage, setCurrentLanguage] = useState("en");
+  const [isListening, setIsListening] = useState(false);
+  const [transcript, setTranscript] = useState("");
 
-  // 🎤 Speech recognition
-  const { transcript, listening, resetTranscript } = useSpeechRecognition();
+  // Custom speech recognition implementation
+  useEffect(() => {
+    if (
+      !("webkitSpeechRecognition" in window) &&
+      !("SpeechRecognition" in window)
+    ) {
+      return;
+    }
 
-  // 📢 Speak function
+    const SpeechRecognition =
+      window.SpeechRecognition || window.webkitSpeechRecognition;
+    const recognition = new SpeechRecognition();
+
+    recognition.continuous = false;
+    recognition.interimResults = false;
+    recognition.lang = getCurrentLanguageCode();
+
+    recognition.onresult = (event) => {
+      const speechResult = event.results[0][0].transcript;
+      setTranscript(speechResult);
+      setIsListening(false);
+    };
+
+    recognition.onerror = () => {
+      setIsListening(false);
+    };
+
+    recognition.onend = () => {
+      setIsListening(false);
+    };
+
+    window.speechRecognitionInstance = recognition;
+
+    return () => {
+      if (recognition) {
+        recognition.stop();
+      }
+    };
+  }, [currentLanguage]);
+
+  const getCurrentLanguageCode = () => {
+    const langMap = {
+      en: "en-US",
+      hi: "hi-IN",
+      mr: "mr-IN",
+      kn: "kn-IN",
+      ta: "ta-IN",
+      te: "te-IN",
+    };
+    return langMap[currentLanguage] || "en-US";
+  };
+
+  const startListening = () => {
+    if (window.speechRecognitionInstance && !isListening) {
+      setTranscript("");
+      setIsListening(true);
+      window.speechRecognitionInstance.start();
+    }
+  };
+
+  const stopListening = () => {
+    if (window.speechRecognitionInstance && isListening) {
+      window.speechRecognitionInstance.stop();
+      setIsListening(false);
+    }
+  };
+
+  const resetTranscript = () => {
+    setTranscript("");
+  };
+
+  const isSpeechSupported = () => {
+    return "webkitSpeechRecognition" in window || "SpeechRecognition" in window;
+  };
+
+  // 📢 Enhanced speak function with language support
   const speak = (text) => {
     const utterance = new SpeechSynthesisUtterance(text);
-    utterance.lang = "en-US";
+    // Set language based on selection
+    const langMap = {
+      en: "en-US",
+      hi: "hi-IN",
+      mr: "mr-IN",
+      kn: "kn-IN",
+      ta: "ta-IN",
+      te: "te-IN",
+    };
+    utterance.lang = langMap[currentLanguage] || "en-US";
+    utterance.rate = 0.9;
+    utterance.pitch = 1;
     window.speechSynthesis.speak(utterance);
   };
 
@@ -197,14 +410,44 @@ export default function Chatbot() {
     const userMessage = { sender: "user", text: query };
     let newMessages = [...messages, userMessage];
 
-    // 🔎 Find matching FAQ answer
-    const found = faqData.find((faq) =>
-      query.toLowerCase().includes(faq.question.toLowerCase())
-    );
+    // Enhanced search logic - more flexible matching
+    const found = faqData.find((faq) => {
+      const queryLower = query.toLowerCase();
+      const questionLower = faq.question.toLowerCase();
+
+      // Check for keyword matches
+      const queryWords = queryLower.split(" ");
+      const questionWords = questionLower.split(" ");
+
+      // If any significant words match, consider it a match
+      const significantWords = [
+        "groundwater",
+        "maharashtra",
+        "karnataka",
+        "status",
+        "levels",
+        "conservation",
+        "trends",
+        "compare",
+        "critical",
+        "safe",
+      ];
+      const matchingWords = queryWords.filter(
+        (word) =>
+          questionWords.some((qWord) => qWord.includes(word)) ||
+          significantWords.includes(word)
+      );
+
+      return (
+        matchingWords.length >= 1 ||
+        questionLower.includes(queryLower) ||
+        queryLower.includes(questionLower)
+      );
+    });
 
     let answer = found
       ? found.answer
-      : "Sorry, I don't understand. Please try another question related to groundwater management.";
+      : "I'm here to help with groundwater-related questions. Try asking about groundwater status in specific states, conservation methods, or trends. You can also ask me to 'show groundwater status of Maharashtra' or 'compare state groundwater levels'.";
 
     let chartComponent = null;
     if (found && found.chartData) {
@@ -244,10 +487,25 @@ export default function Chatbot() {
     speak(answer);
   };
 
-  if (!SpeechRecognition.browserSupportsSpeechRecognition()) {
+  const handleLanguageChange = (language) => {
+    setCurrentLanguage(language);
+    // Update speech recognition language
+    if (window.speechRecognitionInstance) {
+      window.speechRecognitionInstance.lang = getCurrentLanguageCode();
+    }
+  };
+
+  if (!isSpeechSupported()) {
     return (
-      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6 mt-6">
-        <div className="text-red-500 font-medium">
+      <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg p-6 mt-6 border border-blue-200">
+        <div className="text-red-500 font-medium flex items-center">
+          <svg className="w-5 h-5 mr-2" fill="currentColor" viewBox="0 0 20 20">
+            <path
+              fillRule="evenodd"
+              d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z"
+              clipRule="evenodd"
+            />
+          </svg>
           Your browser does not support voice recognition.
         </div>
       </div>
@@ -256,18 +514,18 @@ export default function Chatbot() {
 
   return (
     <div
-      className={`max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden mt-6 transition-all duration-300 ${
+      className={`max-w-2xl mx-auto bg-white rounded-xl shadow-xl overflow-hidden mt-6 transition-all duration-300 border border-blue-200 ${
         isMinimized ? "h-16" : "h-auto"
       }`}
     >
       <div
-        className="bg-gradient-to-r from-teal-600 to-teal-700 text-white p-4 flex justify-between items-center cursor-pointer"
+        className="bg-gradient-to-r from-blue-600 via-blue-700 to-blue-800 text-white p-4 flex justify-between items-center cursor-pointer"
         onClick={() => setIsMinimized(!isMinimized)}
       >
         <h2 className="text-xl font-bold flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
-            className="h-5 w-5 mr-2"
+            className="h-6 w-6 mr-2"
             fill="none"
             viewBox="0 0 24 24"
             stroke="currentColor"
@@ -279,9 +537,9 @@ export default function Chatbot() {
               d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
             />
           </svg>
-          INGRES Assistant
+          INGRES AI Assistant
         </h2>
-        <button className="text-teal-100 hover:text-white">
+        <button className="text-blue-100 hover:text-white transition-colors">
           {isMinimized ? (
             <svg
               xmlns="http://www.w3.org/2000/svg"
@@ -314,38 +572,51 @@ export default function Chatbot() {
 
       {!isMinimized && (
         <>
-          <div className="h-80 overflow-y-auto p-4 bg-gray-50">
+          <div className="h-80 overflow-y-auto p-4 bg-gradient-to-b from-blue-50 to-white">
             {messages.length === 0 ? (
-              <div className="text-center text-gray-500 py-8">
-                <svg
-                  xmlns="http://www.w3.org/2000/svg"
-                  className="h-12 w-12 mx-auto text-teal-400 mb-2"
-                  fill="none"
-                  viewBox="0 0 24 24"
-                  stroke="currentColor"
-                >
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"
-                  />
-                </svg>
-                <p className="text-lg font-medium text-gray-700 mb-2">
-                  AI Groundwater Assistant
-                </p>
-                <p>
-                  Hello! Ask me about groundwater levels, trends, or
-                  conservation methods.
-                </p>
-                <div className="mt-4 text-sm bg-teal-50 p-3 rounded-lg border border-teal-100">
-                  <p className="font-medium text-teal-700">Try asking:</p>
-                  <p className="mt-1">
-                    "Show me groundwater levels in Maharashtra"
+              <div className="text-center text-gray-600 py-8">
+                <div className="bg-white rounded-lg p-6 shadow-md border border-blue-100">
+                  <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    className="h-16 w-16 mx-auto text-blue-500 mb-4"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={1.5}
+                      d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
+                    />
+                  </svg>
+                  <p className="text-xl font-bold text-blue-900 mb-2">
+                    AI Groundwater Assistant
                   </p>
-                  <p>"What's the status in Karnataka?"</p>
-                  <p>"Compare state groundwater levels"</p>
-                  <p>"Show conservation methods effectiveness"</p>
+                  <p className="text-blue-700 mb-4">
+                    Get real-time groundwater data, trends, and conservation
+                    insights
+                  </p>
+                  <div className="mt-6 text-sm bg-blue-50 p-4 rounded-lg border border-blue-200">
+                    <p className="font-semibold text-blue-800 mb-2">
+                      Try asking:
+                    </p>
+                    <div className="space-y-1 text-left">
+                      <p className="text-blue-700">
+                        • "Show me groundwater levels in Maharashtra"
+                      </p>
+                      <p className="text-blue-700">
+                        • "What's the status in Karnataka?"
+                      </p>
+                      <p className="text-blue-700">
+                        • "Compare state groundwater levels"
+                      </p>
+                      <p className="text-blue-700">
+                        • "Show conservation methods effectiveness"
+                      </p>
+                      <p className="text-blue-700">• "Trends in Maharashtra"</p>
+                    </div>
+                  </div>
                 </div>
               </div>
             ) : (
@@ -359,8 +630,8 @@ export default function Chatbot() {
                     <div
                       className={`max-w-xs md:max-w-md rounded-lg p-3 ${
                         msg.sender === "user"
-                          ? "bg-teal-600 text-white rounded-br-none"
-                          : "bg-white text-gray-800 rounded-bl-none shadow-sm border border-gray-200"
+                          ? "bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-br-none shadow-md"
+                          : "bg-white text-gray-800 rounded-bl-none shadow-md border border-blue-100"
                       }`}
                     >
                       {msg.text}
@@ -376,20 +647,26 @@ export default function Chatbot() {
             )}
           </div>
 
-          <div className="p-4 border-t border-gray-200">
+          <div className="p-4 border-t border-blue-200 bg-white">
+            {/* Language Selector */}
+            <LanguageSelector
+              currentLanguage={currentLanguage}
+              onLanguageChange={handleLanguageChange}
+            />
+
             {/* Typing input */}
             <div className="flex mb-3">
               <input
                 type="text"
                 value={input}
-                placeholder="Type your question here..."
+                placeholder="Type your groundwater question here..."
                 onChange={(e) => setInput(e.target.value)}
                 onKeyPress={(e) => e.key === "Enter" && handleSend()}
-                className="flex-1 border border-gray-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent"
+                className="flex-1 border border-blue-300 rounded-l-lg px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
               />
               <button
                 onClick={() => handleSend()}
-                className="bg-teal-600 text-white px-4 rounded-r-lg hover:bg-teal-700 transition-colors flex items-center"
+                className="bg-gradient-to-r from-blue-600 to-blue-700 text-white px-4 rounded-r-lg hover:from-blue-700 hover:to-blue-800 transition-all flex items-center"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -402,17 +679,18 @@ export default function Chatbot() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M13 5l7 7-7 7M5 5l7 7-7 7"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                   />
                 </svg>
               </button>
             </div>
 
-            {/* 🎤 Voice controls */}
+            {/* 🎤 Enhanced Voice controls */}
             <div className="flex flex-wrap gap-2">
               <button
-                onClick={SpeechRecognition.startListening}
-                className="flex items-center bg-blue-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-blue-700 transition-colors"
+                onClick={startListening}
+                disabled={isListening}
+                className="flex items-center bg-gradient-to-r from-green-500 to-green-600 text-white px-3 py-2 rounded-lg text-sm hover:from-green-600 hover:to-green-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -428,11 +706,12 @@ export default function Chatbot() {
                     d="M19 11a7 7 0 01-7 7m0 0a7 7 0 01-7-7m7 7v4m0 0H8m4 0h4m-4-8a3 3 0 01-3-3V5a3 3 0 116 0v6a3 3 0 01-3 3z"
                   />
                 </svg>
-                Start Speaking
+                {isListening ? "Listening..." : "Start Speaking"}
               </button>
               <button
-                onClick={SpeechRecognition.stopListening}
-                className="flex items-center bg-red-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-red-700 transition-colors"
+                onClick={stopListening}
+                disabled={!isListening}
+                className="flex items-center bg-gradient-to-r from-red-500 to-red-600 text-white px-3 py-2 rounded-lg text-sm hover:from-red-600 hover:to-red-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -452,7 +731,8 @@ export default function Chatbot() {
               </button>
               <button
                 onClick={() => handleSend(transcript)}
-                className="flex items-center bg-purple-600 text-white px-3 py-2 rounded-lg text-sm hover:bg-purple-700 transition-colors"
+                disabled={!transcript}
+                className="flex items-center bg-gradient-to-r from-purple-500 to-purple-600 text-white px-3 py-2 rounded-lg text-sm hover:from-purple-600 hover:to-purple-700 transition-all disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 <svg
                   xmlns="http://www.w3.org/2000/svg"
@@ -465,28 +745,23 @@ export default function Chatbot() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M14.752 11.168l-3.197-2.132A1 1 0 0010 9.87v4.263a1 1 0 001.555.832l3.197-2.132a1 1 0 000-1.664z"
-                  />
-                  <path
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                    strokeWidth={2}
-                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                    d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
                   />
                 </svg>
                 Send Voice
               </button>
             </div>
 
-            {listening && (
-              <div className="mt-3 flex items-center text-red-500 font-medium">
-                <div className="w-3 h-3 bg-red-500 rounded-full animate-pulse mr-2"></div>
-                Listening...
+            {isListening && (
+              <div className="mt-3 flex items-center text-green-600 font-medium bg-green-50 p-2 rounded-lg border border-green-200">
+                <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse mr-2"></div>
+                Listening for your question...
               </div>
             )}
             {transcript && (
-              <div className="mt-3 p-2 bg-yellow-50 rounded border border-yellow-200 text-sm">
-                <span className="font-medium">You said:</span> {transcript}
+              <div className="mt-3 p-3 bg-blue-50 rounded-lg border border-blue-200 text-sm">
+                <span className="font-medium text-blue-800">You said:</span>
+                <span className="text-blue-700"> {transcript}</span>
               </div>
             )}
           </div>
@@ -494,12 +769,10 @@ export default function Chatbot() {
       )}
 
       {!isMinimized && (
-        <div className="bg-gray-100 py-2 px-4 text-center text-xs text-gray-600 border-t border-gray-200">
-          INGRES Virtual Assistant © 2025 | Groundwater Management System
+        <div className="bg-gradient-to-r from-blue-600 to-blue-700 py-2 px-4 text-center text-xs text-blue-100">
+          INGRES AI Assistant © 2025 | Real-time Groundwater Monitoring System
         </div>
       )}
     </div>
   );
 }
-
-Chatbot.jsx;

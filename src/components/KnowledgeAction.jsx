@@ -39,9 +39,15 @@ export default function KnowledgeAction() {
     },
   };
 
+  const tips = [
+    "WHO recommends 50-100 liters of water per person per day for basic needs.",
+    "Efficient irrigation can save up to 40% of agricultural water usage.",
+    "One leaking tap can waste over 15 liters of water per day.",
+    "Greywater recycling can reduce household freshwater demand by 30%.",
+  ];
+
   const statusData = suggestions[selectedStatus];
 
-  // Tailwind-safe color mapping
   const colorClasses = {
     green: {
       bg: "bg-green-500",
@@ -64,34 +70,21 @@ export default function KnowledgeAction() {
   };
 
   const selectedColors = colorClasses[statusData.color];
+  const randomTip = tips[Math.floor(Math.random() * tips.length)];
 
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden mt-6 animate-fadeIn">
-      {/* Header Section */}
+      {/* Header */}
       <div className="bg-gradient-to-r from-blue-700 to-green-600 p-6 text-white">
         <h2 className="text-2xl font-bold flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m2.828 9.9a5 5 0 117.072 0l-.548.547A3.374 3.374 0 0014 18.469V19a2 2 0 11-4 0v-.531c0-.895-.356-1.754-.988-2.386l-.548-.547z"
-            />
-          </svg>
-          Knowledge + Action Section
+          🌍 Knowledge + Action
         </h2>
         <p className="mt-2 opacity-90">
           Get region-specific actions based on groundwater status
         </p>
       </div>
 
-      {/* Status Selector */}
+      {/* Selector */}
       <div className="p-6">
         <h3 className="text-lg font-medium text-gray-700 mb-3">
           Select Groundwater Status:
@@ -105,7 +98,7 @@ export default function KnowledgeAction() {
                 onClick={() => setSelectedStatus(status)}
                 className={`px-4 py-2 rounded-lg font-medium transition-all shadow-sm ${
                   selectedStatus === status
-                    ? `${colors.bg} text-white shadow-md`
+                    ? `${colors.bg} text-white shadow-md scale-105`
                     : `${colors.lightBg} ${colors.text} hover:bg-opacity-80`
                 }`}
               >
@@ -115,12 +108,14 @@ export default function KnowledgeAction() {
           })}
         </div>
 
-        {/* Status Info Card */}
+        {/* Status Card */}
         <div
-          className={`p-6 mt-6 rounded-xl border-l-4 ${selectedColors.border} ${selectedColors.lightBg}`}
+          className={`p-6 mt-6 rounded-xl border-l-4 ${selectedColors.border} ${selectedColors.lightBg} transition-all duration-300`}
         >
           <div className="flex items-start">
-            <span className="text-3xl mr-4">{statusData.icon}</span>
+            <span className="text-3xl mr-4 animate-bounce">
+              {statusData.icon}
+            </span>
             <div>
               <h3 className="text-xl font-semibold text-gray-800 mb-2">
                 Status: {selectedStatus}
@@ -130,7 +125,7 @@ export default function KnowledgeAction() {
           </div>
         </div>
 
-        {/* Recommended Actions */}
+        {/* Actions */}
         <h3 className="text-xl font-semibold text-gray-800 mt-6 mb-4">
           Recommended Actions:
         </h3>
@@ -138,7 +133,7 @@ export default function KnowledgeAction() {
           {statusData.actions.map((action, index) => (
             <div
               key={index}
-              className="p-4 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-shadow"
+              className="p-4 rounded-lg bg-white border border-gray-200 shadow-sm hover:shadow-md transition-transform transform hover:-translate-y-1"
             >
               <div className="flex items-start">
                 <span
@@ -153,13 +148,9 @@ export default function KnowledgeAction() {
         </div>
 
         {/* Knowledge Tip */}
-        <div className="mt-8 bg-blue-50 p-4 rounded-xl">
+        <div className="mt-8 bg-blue-50 p-4 rounded-xl shadow-inner">
           <h4 className="font-semibold text-blue-800 mb-2">💡 Did You Know?</h4>
-          <p className="text-sm text-blue-700">
-            WHO recommends 50-100 liters of water per person per day for basic
-            needs. Using efficient irrigation and appliances can cut consumption
-            by 30%+ without compromising quality of life.
-          </p>
+          <p className="text-sm text-blue-700">{randomTip}</p>
         </div>
       </div>
     </div>
