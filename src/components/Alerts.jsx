@@ -1,12 +1,11 @@
-// Alerts.jsx
 import { useState, useEffect } from "react";
 
 export default function Alerts() {
   const [alerts, setAlerts] = useState([]);
+  const [filter, setFilter] = useState("All");
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-    // Simulate API call
     setTimeout(() => {
       setAlerts([
         {
@@ -52,20 +51,20 @@ export default function Alerts() {
   const getStatusColor = (status) => {
     switch (status) {
       case "Safe":
-        return "bg-green-100 text-green-800";
+        return "bg-green-100 text-green-800 border-green-500";
       case "Semi-Critical":
-        return "bg-yellow-100 text-yellow-800";
+        return "bg-yellow-100 text-yellow-800 border-yellow-500";
       case "Critical":
-        return "bg-red-100 text-red-800";
+        return "bg-red-100 text-red-800 border-red-500";
       default:
-        return "bg-gray-100 text-gray-800";
+        return "bg-gray-100 text-gray-800 border-gray-300";
     }
   };
 
   const getStatusIcon = (status) => {
     switch (status) {
       case "Safe":
-        return "✅";
+        return "💧";
       case "Semi-Critical":
         return "⚠️";
       case "Critical":
@@ -75,9 +74,13 @@ export default function Alerts() {
     }
   };
 
+  const filteredAlerts =
+    filter === "All" ? alerts : alerts.filter((a) => a.status === filter);
+
   return (
     <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden mt-6 animate-fadeIn">
-      <div className="bg-gradient-to-r from-teal-600 to-blue-600 p-6 text-white">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-700 to-green-600 p-6 text-white">
         <h2 className="text-2xl font-bold flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -96,90 +99,90 @@ export default function Alerts() {
           Alerts & Notifications
         </h2>
         <p className="mt-2 opacity-90">
-          Real-time groundwater status updates across regions
+          Live groundwater status updates for selected regions
         </p>
       </div>
 
       <div className="p-6">
+        {/* Filter Buttons */}
         <div className="flex justify-between items-center mb-6">
           <div className="flex space-x-2">
-            <button className="px-3 py-1 bg-teal-100 text-teal-800 rounded-full text-sm font-medium">
-              All
-            </button>
-            <button className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
-              Critical
-            </button>
-            <button className="px-3 py-1 bg-gray-100 text-gray-800 rounded-full text-sm font-medium">
-              Warnings
-            </button>
+            {["All", "Critical", "Semi-Critical", "Safe"].map((f) => (
+              <button
+                key={f}
+                onClick={() => setFilter(f)}
+                className={`px-3 py-1 rounded-full text-sm font-medium transition-all ${
+                  filter === f
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                {f}
+              </button>
+            ))}
           </div>
           <div className="text-sm text-gray-500">Last updated: Just now</div>
         </div>
 
+        {/* Alert Cards */}
         <div className="space-y-4">
-          {alerts.map((alert, index) => (
-            <div
-              key={alert.id}
-              className={`p-4 border-l-4 rounded-r-lg shadow-sm transition-all duration-300 transform hover:scale-[1.02] ${
-                animate
-                  ? "opacity-100 translate-x-0"
-                  : "opacity-0 -translate-x-4"
-              }`}
-              style={{
-                transitionDelay: `${index * 100}ms`,
-                borderLeftColor:
-                  alert.status === "Critical"
-                    ? "#f87171"
-                    : alert.status === "Semi-Critical"
-                    ? "#fbbf24"
-                    : "#34d399",
-              }}
-            >
-              <div className="flex justify-between items-start">
-                <div className="flex items-start space-x-3">
-                  <span className="text-xl">{getStatusIcon(alert.status)}</span>
-                  <div>
-                    <h3 className="font-semibold text-gray-800">
-                      {alert.region}
-                    </h3>
-                    <p className="text-sm text-gray-600">{alert.time}</p>
+          {filteredAlerts.length > 0 ? (
+            filteredAlerts.map((alert, index) => (
+              <div
+                key={alert.id}
+                className={`p-4 border-l-4 rounded-lg bg-white shadow-sm hover:shadow-md transition-all transform ${
+                  animate
+                    ? "opacity-100 translate-x-0"
+                    : "opacity-0 -translate-x-4"
+                }`}
+                style={{ transitionDelay: `${index * 100}ms` }}
+              >
+                <div className="flex justify-between items-start">
+                  <div className="flex items-start space-x-3">
+                    <span className="text-xl">
+                      {getStatusIcon(alert.status)}
+                    </span>
+                    <div>
+                      <h3 className="font-semibold text-gray-800">
+                        {alert.region}
+                      </h3>
+                      <p className="text-sm text-gray-500">{alert.time}</p>
+                    </div>
                   </div>
+                  <span
+                    className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
+                      alert.status
+                    )}`}
+                  >
+                    {alert.status}
+                  </span>
                 </div>
-                <span
-                  className={`px-3 py-1 rounded-full text-xs font-medium ${getStatusColor(
-                    alert.status
-                  )}`}
-                >
-                  {alert.status}
-                </span>
+                <p className="mt-2 text-gray-700 ml-9">
+                  Groundwater level is <b>{alert.status.toLowerCase()}</b>.{" "}
+                  {alert.type} notification issued.
+                </p>
               </div>
-              <p className="mt-2 text-gray-700 ml-9">
-                Groundwater level is <b>{alert.status.toLowerCase()}</b>.{" "}
-                {alert.type} notification issued.
-              </p>
+            ))
+          ) : (
+            <div className="text-center py-8 text-gray-500">
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                className="h-12 w-12 mx-auto text-gray-400 mb-2"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              <p>No alerts at this time</p>
             </div>
-          ))}
+          )}
         </div>
-
-        {alerts.length === 0 && (
-          <div className="text-center py-8 text-gray-500">
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-12 w-12 mx-auto text-gray-400 mb-2"
-              fill="none"
-              viewBox="0 0 24 24"
-              stroke="currentColor"
-            >
-              <path
-                strokeLinecap="round"
-                strokeLinejoin="round"
-                strokeWidth={2}
-                d="M9.172 16.172a4 4 0 015.656 0M9 10h.01M15 10h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
-              />
-            </svg>
-            <p>No alerts at this time</p>
-          </div>
-        )}
       </div>
     </div>
   );

@@ -19,7 +19,6 @@ export default function ComparativeAnalysis() {
   const [animate, setAnimate] = useState(false);
 
   useEffect(() => {
-    // Simulate API call
     setTimeout(() => {
       setComparison([
         { region: "Pune", recharge: 80, extraction: 60, stage: "Safe" },
@@ -58,7 +57,8 @@ export default function ComparativeAnalysis() {
 
   return (
     <div className="max-w-6xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden mt-6 animate-fadeIn">
-      <div className="bg-gradient-to-r from-purple-600 to-indigo-600 p-6 text-white">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-cyan-600 to-blue-600 p-6 text-white">
         <h2 className="text-2xl font-bold flex items-center">
           <svg
             xmlns="http://www.w3.org/2000/svg"
@@ -81,6 +81,7 @@ export default function ComparativeAnalysis() {
         </p>
       </div>
 
+      {/* Chart Toggle */}
       <div className="p-6">
         <div className="flex justify-between items-center mb-6">
           <div className="flex space-x-2">
@@ -88,7 +89,7 @@ export default function ComparativeAnalysis() {
               onClick={() => setChartType("bar")}
               className={`px-4 py-2 rounded-lg ${
                 chartType === "bar"
-                  ? "bg-purple-100 text-purple-800"
+                  ? "bg-cyan-100 text-cyan-800"
                   : "bg-gray-100 text-gray-800"
               }`}
             >
@@ -98,7 +99,7 @@ export default function ComparativeAnalysis() {
               onClick={() => setChartType("line")}
               className={`px-4 py-2 rounded-lg ${
                 chartType === "line"
-                  ? "bg-purple-100 text-purple-800"
+                  ? "bg-cyan-100 text-cyan-800"
                   : "bg-gray-100 text-gray-800"
               }`}
             >
@@ -108,8 +109,9 @@ export default function ComparativeAnalysis() {
           <div className="text-sm text-gray-500">Data source: CGWB 2023</div>
         </div>
 
+        {/* Charts */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-          <div className="bg-gray-50 p-4 rounded-xl">
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl shadow-sm hover:shadow-cyan-200 transition-all">
             <h3 className="font-semibold text-gray-800 mb-4">
               Recharge vs Extraction
             </h3>
@@ -127,7 +129,7 @@ export default function ComparativeAnalysis() {
                     <Legend />
                     <Bar
                       dataKey="recharge"
-                      fill="#4ade80"
+                      fill="#34d399"
                       name="Recharge (%)"
                       radius={[4, 4, 0, 0]}
                     />
@@ -151,7 +153,7 @@ export default function ComparativeAnalysis() {
                     <Line
                       type="monotone"
                       dataKey="recharge"
-                      stroke="#4ade80"
+                      stroke="#34d399"
                       name="Recharge (%)"
                       strokeWidth={2}
                       dot={{ r: 4 }}
@@ -170,7 +172,8 @@ export default function ComparativeAnalysis() {
             </div>
           </div>
 
-          <div className="bg-gray-50 p-4 rounded-xl">
+          {/* Data Table */}
+          <div className="bg-gradient-to-r from-blue-50 to-cyan-50 p-4 rounded-xl shadow-sm hover:shadow-cyan-200 transition-all">
             <h3 className="font-semibold text-gray-800 mb-4">Data Summary</h3>
             <div className="overflow-x-auto">
               <table className="min-w-full divide-y divide-gray-200">
@@ -226,6 +229,7 @@ export default function ComparativeAnalysis() {
           </div>
         </div>
 
+        {/* Insights */}
         <div className="bg-blue-50 p-4 rounded-xl border-l-4 border-blue-500">
           <h4 className="font-semibold text-blue-800 mb-2">
             Analysis Insights

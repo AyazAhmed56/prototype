@@ -1,5 +1,49 @@
+// FAQ.jsx
 import React, { useState } from "react";
 
+export default function FAQ() {
+  const [search, setSearch] = useState("");
+
+  const filtered = faqData.filter((f) =>
+    f.question.toLowerCase().includes(search.toLowerCase())
+  );
+
+  return (
+    <div className="max-w-4xl mx-auto bg-white rounded-xl shadow-lg p-6 mt-6 animate-fadeIn">
+      <h2 className="text-2xl font-bold mb-6 text-teal-700 text-center">
+        Frequently Asked Questions
+      </h2>
+
+      <input
+        type="text"
+        placeholder="Search question..."
+        className="border border-gray-300 p-3 w-full rounded-lg mb-6 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:border-transparent transition"
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+      />
+
+      <div className="space-y-4">
+        {filtered.map((f, i) => (
+          <div
+            key={i}
+            className="p-4 border border-gray-200 rounded-xl hover:shadow-md transition-shadow hover:scale-[1.02]"
+          >
+            <h3 className="font-semibold text-teal-700 mb-2">{f.question}</h3>
+            <p className="text-gray-700">{f.answer}</p>
+          </div>
+        ))}
+
+        {filtered.length === 0 && (
+          <p className="text-center text-gray-500 py-4">
+            No questions found. Try a different keyword.
+          </p>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// Add your faqData above or import from a separate file
 const faqData = [
   {
     question: "What is groundwater?",
@@ -92,34 +136,3 @@ const faqData = [
       "Many states follow the Model Bill for Groundwater Regulation 2011.",
   },
 ];
-
-export default function FAQ() {
-  const [search, setSearch] = useState("");
-
-  const filtered = faqData.filter((f) =>
-    f.question.toLowerCase().includes(search.toLowerCase())
-  );
-
-  return (
-    <div className="bg-white shadow-md p-6 rounded-lg">
-      <h2 className="text-2xl font-bold mb-4 text-teal-700">
-        Frequently Asked Questions
-      </h2>
-      <input
-        type="text"
-        placeholder="Search question..."
-        className="border p-2 w-full rounded mb-4"
-        value={search}
-        onChange={(e) => setSearch(e.target.value)}
-      />
-      <div className="space-y-3">
-        {filtered.map((f, i) => (
-          <div key={i} className="p-3 border rounded-md hover:shadow">
-            <h3 className="font-semibold text-teal-800">{f.question}</h3>
-            <p className="text-gray-700">{f.answer}</p>
-          </div>
-        ))}
-      </div>
-    </div>
-  );
-}

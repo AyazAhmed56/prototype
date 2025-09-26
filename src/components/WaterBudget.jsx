@@ -9,80 +9,69 @@ export default function WaterBudget() {
   const handleCheck = () => {
     if (!usage) return;
 
-    if (usage < 50) setResult("Sustainable ✅");
-    else if (usage < 100) setResult("Semi-Critical ⚠️ - Save Water!");
-    else setResult("Critical ❌ - Immediate action required!");
+    const value = Number(usage);
+    if (value < 50) setResult("Sustainable ✅");
+    else if (value < 100) setResult("Semi-Critical ⚠️ – Save Water!");
+    else setResult("Critical ❌ – Immediate Action Required!");
 
     setShowResult(true);
   };
 
   const getResultColor = () => {
-    if (result.includes("Sustainable")) return "text-green-600";
-    if (result.includes("Semi-Critical")) return "text-yellow-600";
-    return "text-red-600";
+    if (result.includes("Sustainable")) return "text-emerald-600";
+    if (result.includes("Semi-Critical")) return "text-amber-600";
+    return "text-rose-600";
   };
 
   return (
-    <div className="max-w-2xl mx-auto bg-white rounded-xl shadow-lg overflow-hidden mt-6 animate-fadeIn">
-      <div className="bg-gradient-to-r from-blue-600 to-cyan-600 p-6 text-white">
+    <div className="max-w-2xl mx-auto bg-white rounded-2xl shadow-xl overflow-hidden mt-8 animate-fadeIn">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-cyan-700 via-blue-600 to-sky-500 p-6 text-white">
         <h2 className="text-2xl font-bold flex items-center">
-          <svg
-            xmlns="http://www.w3.org/2000/svg"
-            className="h-6 w-6 mr-2"
-            fill="none"
-            viewBox="0 0 24 24"
-            stroke="currentColor"
-          >
-            <path
-              strokeLinecap="round"
-              strokeLinejoin="round"
-              strokeWidth={2}
-              d="M12 6v6m0 0v6m0-6h6m-6 0H6"
-            />
-          </svg>
-          Water Budget Calculator
+          💧 Water Budget Calculator
         </h2>
-        <p className="mt-2 opacity-90">
-          Calculate your water usage sustainability score
+        <p className="mt-2 opacity-90 text-sm">
+          Find out if your water usage is within safe groundwater limits.
         </p>
       </div>
 
+      {/* Input Section */}
       <div className="p-6">
-        <div className="mb-6">
-          <label
-            className="block text-gray-700 font-medium mb-2"
-            htmlFor="usage"
-          >
-            Daily Water Usage (liters per person)
-          </label>
-          <input
-            id="usage"
-            type="number"
-            placeholder="Enter water usage (liters/day)"
-            value={usage}
-            onChange={(e) => setUsage(e.target.value)}
-            className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-all"
-          />
-          <p className="text-sm text-gray-500 mt-2">
-            UN recommends 50-100 liters per person per day
-          </p>
-        </div>
+        <label
+          className="block text-gray-700 font-semibold mb-2"
+          htmlFor="usage"
+        >
+          Daily Water Usage (liters/person)
+        </label>
+        <input
+          id="usage"
+          type="number"
+          placeholder="e.g., 80"
+          value={usage}
+          onChange={(e) => setUsage(e.target.value)}
+          className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-cyan-500 focus:border-cyan-500 transition-all"
+        />
+        <p className="text-xs text-gray-500 mt-1">
+          UN recommends 50–100 L/person/day for basic needs.
+        </p>
 
+        {/* Calculate Button */}
         <button
           onClick={handleCheck}
           disabled={!usage}
-          className={`w-full py-3 px-4 rounded-lg font-medium text-white transition-all ${
+          className={`w-full mt-4 py-3 px-4 rounded-lg font-semibold text-white transition-all ${
             usage
-              ? "bg-blue-600 hover:bg-blue-700"
+              ? "bg-cyan-600 hover:bg-cyan-700"
               : "bg-gray-400 cursor-not-allowed"
           }`}
         >
           Calculate Sustainability
         </button>
 
+        {/* Result Section */}
         {showResult && (
           <div
-            className={`mt-6 p-6 rounded-lg text-center animate-popIn ${getResultColor().replace(
+            className={`mt-6 p-6 rounded-xl text-center shadow-md animate-popIn ${getResultColor().replace(
               "text",
               "bg"
             )} bg-opacity-10`}
@@ -94,39 +83,34 @@ export default function WaterBudget() {
                 ? "⚠️"
                 : "🚱"}
             </div>
-            <h3 className="text-xl font-semibold mb-2">
-              Water Usage Assessment
-            </h3>
+            <h3 className="text-xl font-bold mb-2">Water Usage Assessment</h3>
             <p className={`text-lg font-bold ${getResultColor()}`}>{result}</p>
 
-            <div className="mt-4 p-4 bg-white rounded-lg shadow-sm">
+            {/* Recommendations */}
+            <div className="mt-4 p-4 bg-gray-50 rounded-lg">
               <h4 className="font-medium text-gray-800 mb-2">
                 Recommendations:
               </h4>
-              <ul className="text-sm text-gray-600 text-left space-y-1">
+              <ul className="text-sm text-gray-700 text-left space-y-1">
                 {result.includes("Sustainable") ? (
                   <>
-                    <li>
-                      • Continue your current water conservation practices
-                    </li>
-                    <li>
-                      • Consider rainwater harvesting for non-potable uses
-                    </li>
-                    <li>• Share your sustainable practices with others</li>
+                    <li>• Maintain your current water practices</li>
+                    <li>• Consider rainwater harvesting for extra supply</li>
+                    <li>• Share best practices in your community</li>
                   </>
                 ) : result.includes("Semi-Critical") ? (
                   <>
-                    <li>• Fix any leaking taps or pipes immediately</li>
-                    <li>
-                      • Take shorter showers and turn off taps when not in use
-                    </li>
-                    <li>• Use water-efficient appliances and fixtures</li>
+                    <li>• Fix leaking taps or pipes immediately</li>
+                    <li>• Reduce shower time & turn off taps when unused</li>
+                    <li>• Switch to water-efficient appliances</li>
                   </>
                 ) : (
                   <>
-                    <li>• Conduct a water audit to identify waste areas</li>
-                    <li>• Implement immediate water conservation measures</li>
-                    <li>• Consider installing water recycling systems</li>
+                    <li>• Conduct a detailed water audit ASAP</li>
+                    <li>• Implement water reuse & recycling systems</li>
+                    <li>
+                      • Adopt strict conservation measures (drip irrigation)
+                    </li>
                   </>
                 )}
               </ul>
@@ -134,22 +118,23 @@ export default function WaterBudget() {
           </div>
         )}
 
-        <div className="mt-8 bg-gray-50 p-4 rounded-lg">
-          <h4 className="font-semibold text-gray-800 mb-2">
+        {/* Guidelines */}
+        <div className="mt-8 bg-cyan-50 p-4 rounded-lg">
+          <h4 className="font-semibold text-gray-800 mb-3">
             Water Usage Guidelines
           </h4>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
-            <div className="p-3 bg-green-100 rounded-lg">
-              <div className="text-2xl font-bold text-green-700">{"<50"}</div>
-              <div className="text-sm text-green-600">Sustainable</div>
+            <div className="p-3 bg-emerald-100 rounded-lg">
+              <div className="text-2xl font-bold text-emerald-700">{"<50"}</div>
+              <div className="text-sm text-emerald-600">Sustainable</div>
             </div>
-            <div className="p-3 bg-yellow-100 rounded-lg">
-              <div className="text-2xl font-bold text-yellow-700">50-100</div>
-              <div className="text-sm text-yellow-600">Semi-Critical</div>
+            <div className="p-3 bg-amber-100 rounded-lg">
+              <div className="text-2xl font-bold text-amber-700">50-100</div>
+              <div className="text-sm text-amber-600">Semi-Critical</div>
             </div>
-            <div className="p-3 bg-red-100 rounded-lg">
-              <div className="text-2xl font-bold text-red-700">{">100"}</div>
-              <div className="text-sm text-red-600">Critical</div>
+            <div className="p-3 bg-rose-100 rounded-lg">
+              <div className="text-2xl font-bold text-rose-700">{">100"}</div>
+              <div className="text-sm text-rose-600">Critical</div>
             </div>
           </div>
         </div>

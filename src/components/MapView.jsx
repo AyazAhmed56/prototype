@@ -1,8 +1,14 @@
-import { MapContainer, TileLayer, GeoJSON, Popup } from "react-leaflet";
+import {
+  MapContainer,
+  TileLayer,
+  GeoJSON,
+  Tooltip,
+  Popup,
+} from "react-leaflet";
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
 
-// Groundwater status data (dummy, replace with real data)
+// Dummy groundwater status data (replace with real DB/INGRES data)
 const groundwaterStatus = {
   Maharashtra: "Critical",
   Gujarat: "Safe",
@@ -11,27 +17,27 @@ const groundwaterStatus = {
   UttarPradesh: "Critical",
 };
 
-// Color scheme
+// 🌊 Groundwater-themed color palette
 const getColor = (status) => {
   switch (status) {
     case "Over-exploited":
-      return "red";
+      return "#B71C1C"; // deep red
     case "Critical":
-      return "orange";
+      return "#FF6F00"; // dark orange
     case "Semi-critical":
-      return "yellow";
+      return "#FFD600"; // warm yellow
     case "Safe":
-      return "green";
+      return "#2E7D32"; // deep green
     default:
-      return "gray";
+      return "#90A4AE"; // gray for unknown
   }
 };
 
 export default function MapView() {
   const [indiaGeoJson, setIndiaGeoJson] = useState(null);
+  const [activeLayer, setActiveLayer] = useState("Groundwater");
 
   useEffect(() => {
-    // Fetch GeoJSON for India states
     fetch(
       "https://raw.githubusercontent.com/geohacker/india/master/state/india_telengana.geojson"
     )
@@ -39,54 +45,87 @@ export default function MapView() {
       .then((data) => setIndiaGeoJson(data));
   }, []);
 
-  // Style for each state
   const styleFeature = (feature) => {
-    const stateName = feature.properties.NAME_1; // Name from geojson
+    const stateName = feature.properties.NAME_1;
     const status = groundwaterStatus[stateName] || "Unknown";
     return {
       fillColor: getColor(status),
       weight: 1,
       opacity: 1,
-      color: "black",
-      fillOpacity: 0.6,
+      color: "#1565C0", // water blue borders
+      fillOpacity: 0.65,
     };
   };
 
-  // Interaction (click → highlight + popup)
   const onEachFeature = (feature, layer) => {
     const stateName = feature.properties.NAME_1;
     const status = groundwaterStatus[stateName] || "Unknown";
-    layer.bindPopup(
-      `<b>${stateName}</b><br/>Groundwater Status: <b>${status}</b>`
-    );
+
+    layer.bindTooltip(`${stateName}`, {
+      direction: "center",
+      className: "bg-blue-50 text-blue-900 p-1 rounded-md shadow-md",
+    });
+
+    layer.bindPopup(`<b>${stateName}</b><br/>Status: <b>${status}</b>`);
+
     layer.on({
       click: (e) => {
         e.target.setStyle({
-          weight: 2,
-          color: "blue",
+          weight: 3,
+          color: "#0D47A1",
           fillOpacity: 0.8,
         });
+      },
+      mouseover: (e) => {
+        e.target.setStyle({
+          weight: 2,
+          color: "#0288D1",
+        });
+      },
+      mouseout: (e) => {
+        e.target.setStyle(styleFeature(feature));
       },
     });
   };
 
   return (
-    <MapContainer
-      style={{ height: "100vh", width: "100%" }}
-      center={[22.9734, 78.6569]}
-      zoom={5}
-    >
-      <TileLayer
-        url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
-        attribution="© OpenStreetMap contributors"
-      />
-      {indiaGeoJson && (
-        <GeoJSON
-          data={indiaGeoJson}
-          style={styleFeature}
-          onEachFeature={onEachFeature}
+    <div className="relative">
+      {/* 🌊 Layer Toggle Buttons */}
+      <div className="absolute top-4 left-4 z-[1000] bg-white shadow-lg p-3 rounded-xl">
+        <p className="font-semibold text-blue-900">Layers</p>
+        {["Groundwater", "Rainfall", "Salinity", "Extraction"].map((layer) => (
+          <button
+            key={layer}
+            onClick={() => setActiveLayer(layer)}
+            className={`block w-full text-left px-3 py-1 rounded-md my-1 ${
+              activeLayer === layer
+                ? "bg-blue-600 text-white"
+                : "bg-blue-50 text-blue-700 hover:bg-blue-100"
+            }`}
+          >
+            {layer}
+          </button>
+        ))}
+      </div>
+
+      {/* 🌍 Map */}
+      <MapContainer
+        style={{ height: "100vh", width: "100%" }}
+        center={[22.9734, 78.6569]}
+        zoom={5}
+      >
+        <TileLayer
+          url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+          attribution="© OpenStreetMap contributors"
         />
-      )}
-    </MapContainer>
+        {indiaGeoJson && (
+          <GeoJSON
+            data={indiaGeoJson}
+            style={styleFeature}
+            onEachFeature={onEachFeature}
+          />
+        )}
+      </MapContainer>
+    </div>
   );
 }
