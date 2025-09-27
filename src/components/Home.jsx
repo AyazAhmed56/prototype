@@ -58,13 +58,13 @@ export default function Home() {
         {/* CTA Buttons */}
         <div className="flex justify-center space-x-4">
           <button
-            onClick={() => navigate("/chatbot")}
+            onClick={() => navigate("/chat")}
             className="bg-teal-600 hover:bg-teal-700 text-white font-medium py-3 px-8 rounded-full transition-all duration-300 transform hover:scale-105 shadow-md"
           >
             🚀 Get Started
           </button>
           <button
-            onClick={() => navigate("/knowledge-base")}
+            onClick={() => navigate("/knowledge")}
             className="border border-teal-600 text-teal-600 hover:bg-teal-50 font-medium py-3 px-8 rounded-full transition-all duration-300"
           >
             ℹ️ Learn More
