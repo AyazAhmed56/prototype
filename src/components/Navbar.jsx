@@ -9,17 +9,21 @@ export default function Navbar() {
 
   const navItems = [
     { path: "/", label: "Home" },
-    { path: "/chat", label: "ChatBOT" },
-    { path: "/region", label: "Region Selector" },
     { path: "/language", label: "Language" },
-    { path: "/alerts", label: "Alerts" },
+    
+    { path: "/region", label: "Region Selector" },
+    { path: "/chat", label: "ChatBOT" },
+    { path: "/faq", label: "FAQ" },
+    
     { path: "/community", label: "Community" },
     { path: "/analysis", label: "Analysis" },
     { path: "/map", label: "India Map" },
-    { path: "/faq", label: "FAQ" },
-    { path: "/budget", label: "Water Budget" },
+    
+    
     { path: "/knowledge", label: "Knowledge+Action" },
     { path: "/dashboard", label: "Dashboard" },
+    { path: "/budget", label: "Water Budget" },
+    { path: "/alerts", label: "Alerts" },
     { path: "/about", label: "About" },
   ];
 

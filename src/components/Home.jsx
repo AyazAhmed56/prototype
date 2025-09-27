@@ -8,18 +8,18 @@ export default function Home() {
     {
       text: "AI-Powered Chatbot with Voice Support",
       icon: "💬",
-      path: "/chatbot",
+      path: "/chat",
     },
     { text: "Regional Groundwater Analysis", icon: "📊", path: "/analysis" },
     { text: "Real-time Alerts & Notifications", icon: "🔔", path: "/alerts" },
-    { text: "Community Feedback System", icon: "👥", path: "/feedback" },
+    { text: "Community Feedback System", icon: "👥", path: "/community" },
     {
       text: "Comparative Data Visualization",
       icon: "📈",
-      path: "/visualization",
+      path: "/region",
     },
-    { text: "Water Budget Calculator", icon: "🧮", path: "/calculator" },
-    { text: "Actionable Knowledge Base", icon: "📚", path: "/knowledge-base" },
+    { text: "Water Budget Calculator", icon: "🧮", path: "/budget" },
+    { text: "Actionable Knowledge Base", icon: "📚", path: "/knowledge" },
     { text: "Decision Maker Dashboard", icon: "🗂️", path: "/dashboard" },
   ];
 
