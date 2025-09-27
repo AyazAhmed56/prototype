@@ -10,16 +10,15 @@ export default function Navbar() {
   const navItems = [
     { path: "/", label: "Home" },
     { path: "/language", label: "Language" },
-    
+
     { path: "/region", label: "Region Selector" },
     { path: "/chat", label: "ChatBOT" },
     { path: "/faq", label: "FAQ" },
-    
+
     { path: "/community", label: "Community" },
     { path: "/analysis", label: "Analysis" },
     { path: "/map", label: "India Map" },
-    
-    
+
     { path: "/knowledge", label: "Knowledge+Action" },
     { path: "/dashboard", label: "Dashboard" },
     { path: "/budget", label: "Water Budget" },
@@ -31,6 +30,26 @@ export default function Navbar() {
     <nav className="bg-teal-800 text-white shadow-lg sticky top-0 z-50">
       <div className="container mx-auto px-4">
         <div className="flex justify-between items-center py-3">
+          {/* Drawer Button */}
+          <button
+            className="focus:outline-none"
+            onClick={() => setIsDrawerOpen(true)}
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              className="h-7 w-7"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
+            >
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M4 6h16M4 12h16m-7 6h7"
+              />
+            </svg>
+          </button>
           {/* Logo */}
           <Link to="/" className="flex items-center space-x-2">
             <div className="w-10 h-10 bg-white rounded-full flex items-center justify-center">
@@ -56,27 +75,6 @@ export default function Navbar() {
           <div className="flex items-center space-x-4">
             <button className="bg-white text-teal-700 px-4 py-1.5 rounded-lg font-semibold hover:bg-gray-100 transition">
               Login
-            </button>
-
-            {/* Drawer Button */}
-            <button
-              className="focus:outline-none"
-              onClick={() => setIsDrawerOpen(true)}
-            >
-              <svg
-                xmlns="http://www.w3.org/2000/svg"
-                className="h-7 w-7"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M4 6h16M4 12h16m-7 6h7"
-                />
-              </svg>
             </button>
           </div>
         </div>
